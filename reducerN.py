@@ -1,18 +1,26 @@
 #!/usr/bin/env python
+"""reducer.py"""
+
+# Reducer(k, v)=(i, k)=>Make sorted Alist and Blist
+# (i, k) => Summation (Aij * Bjk)) for j
+# Output =>((i, k), sum)
+
 
 import sys
 from operator import itemgetter
 
-prev_index = None
+prevKey = None
 value_list = []
 
-for line in sys.stdin:
-    curr_index, index, value = line.rstrip().split("\t")
-    index, value = map(int,[index,value])
-    if curr_index == prev_index:
+for line in sys.stdin: # ((2,1),A,1,3)
+    Line=line.rstrip().replace('(','').replace(')','').split(',') # [2,2,A,1,3]
+    currKey = Line[0]+','+Line[1] # '2,2'
+    index,value = map(int,[Line[3],Line[4]]) # int 1 , int 3
+
+    if currKey == prevKey:
         value_list.append((index,value))
     else:
-        if prev_index:
+        if prevKey:
             value_list = sorted(value_list,key=itemgetter(0))
             i = 0
             result = 0
@@ -21,12 +29,12 @@ for line in sys.stdin:
                     result += value_list[i][1]*value_list[i + 1][1]
                     i += 2
                 else:
-                    i += 1
-            print "%s,%s"%(prev_index,str(result))
-        prev_index = curr_index
+                    i+=1
+            print(f"{prevKey},{str(result)}")
+        prevKey = currKey
         value_list = [(index,value)]
 
-if curr_index == prev_index:
+if currKey == prevKey:
     value_list = sorted(value_list,key=itemgetter(0))
     i = 0
     result = 0
@@ -35,9 +43,8 @@ if curr_index == prev_index:
             result += value_list[i][1]*value_list[i + 1][1]
             i += 2
         else:
-            i += 1
-    print "%s,%s"%(prev_index,str(result))
-
+            i+=1
+    print(f"{prevKey},{str(result)}")
 
 
 
